@@ -1,11 +1,168 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<!doctype html>
+<html lang="en">
+<head>
+  <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  <style>
+    main {
+      width: 960px;
+    }
+
+    ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      list-style-type: none;
+      margin-bottom: 10px;
+      padding: 0;
+    }
+
+    ul li {
+      width: calc(50% - 1rem);
+    }
+
+    ul li * {
+      text-decoration: none;
+      transition: 0.5s ease;
+    }
+
+    ul li img {
+      margin-bottom: 0.5rem;
+      border-radius: 12px;
+    }
+
+    .title {
+      margin: 0;
+      color: rgb(var(--black));
+      line-height: 1;
+    }
+
+    .date {
+      margin: 0;
+      color: rgb(var(--gray));
+    }
+
+    #search {
+      width: 50%;
+      height: 30px;
+      border-radius: 10px;
+      border: 1px solid rgb(21, 21, 81);
+      padding: 5px 10px;
+      margin-bottom: 100px;
+    }
+
+    .no-results {
+      color: red;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <Header />
+  <main>
+    <div>
+      <center>
+        <input
+          id="search"
+          type="text"
+          placeholder="Search for articles..."
+          oninput="filterPosts()"
+        />
+      </center>
+    </div>
+    <section>
+      <ul id="post-list">
+        {posts.map((post) => (
+          <li class="post-item">
+            <a href={`/blog/${post.id}/`}>
+              <img width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
+              <h4 class="title">{post.data.title}</h4>
+              <p class="date">
+                <FormattedDate date={post.data.pubDate} />
+              </p>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p id="no-results" class="no-results" style="display: none;">No matching posts found.</p>
+    </section>
+  <script>
+   function filterPosts() {
+  const searchInput = document.getElementById('search');
+  const postList = document.querySelectorAll('.post-item');
+  const noResultsMessage = document.getElementById('no-results');
+
+  if (!searchInput) {
+    console.error('Search input field not found.');
+    return;
+  }
+
+  if (!noResultsMessage) {
+    console.error('No results message element not found.');
+    return;
+  }
+
+  const searchValue = searchInput.value?.trim().toLowerCase() || ''; 
+  
+  let matchesFound = false;
+
+  postList.forEach((post) => {
+    const titleElement = post.querySelector('.title');
+
+    if (!titleElement) {
+      console.warn('Post title element not found for an item.');
+      return;
+    }
+
+    const titleText = titleElement.textContent?.toLowerCase() || ''; 
+    
+    if (titleText.includes(searchValue)) {
+      post.style.display = 'block'; 
+      matchesFound = true;
+    } else {
+      post.style.display = 'none'; 
+    }
+  });
+
+  if (searchValue === '') {
+    noResultsMessage.style.display = 'none';
+  } else {
+    noResultsMessage.style.display = matchesFound ? 'none' : 'block';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('search');
+  if (searchInput) {
+    searchInput.addEventListener('input', filterPosts);
+  } else {
+    console.error('Search input field not found on DOMContentLoaded.');
+  }
+});
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchInput = document.getElementById('search');
+      if (searchInput) {
+        searchInput.addEventListener('input', filterPosts);
+      } else {
+        console.error('Search input field not found on DOMContentLoaded.');
+      }
+    });
+  </script>
+    </main>
+    <Footer />
+</body>
+</html>
