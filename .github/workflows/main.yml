@@ -23,10 +23,10 @@ jobs:
           node-version: 18
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
-        run: npx eslint src --ext .js,.jsx,.ts,.tsx,.astro || exit 1
+        run: npx eslint src --ext .js,.jsx,.ts,.tsx,.astro
 
       - name: Type Check
-        run: npx tsc --noEmit || exit 1
+        run: npx tsc --noEmit
