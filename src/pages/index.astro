@@ -13,6 +13,7 @@ const posts = (await getCollection('blog')).sort(
 
 <!doctype html>
 <html lang="en">
+
 <head>
   <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   <style>
@@ -70,17 +71,13 @@ const posts = (await getCollection('blog')).sort(
     }
   </style>
 </head>
+
 <body>
   <Header />
   <main>
     <div>
       <center>
-        <input
-          id="search"
-          type="text"
-          placeholder="Search for articles..."
-          oninput="filterPosts()"
-        />
+        <input id="search" type="text" placeholder="Search for articles..." />
       </center>
     </div>
     <section>
@@ -97,72 +94,56 @@ const posts = (await getCollection('blog')).sort(
           </li>
         ))}
       </ul>
-      <p id="no-results" class="no-results" style="display: none;">No matching posts found.</p>
+      <p id="no-results" class="no-results" style="display: none;">
+        No matching posts found.
+      </p>
     </section>
-  <script>
-   function filterPosts() {
-  const searchInput = document.getElementById('search');
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('search');
+        const postList = document.querySelectorAll('.post-item');
+        const noResultsMessage = document.getElementById('no-results');
+
+        if (!searchInput || !noResultsMessage) {
+          console.error('Search input or no-results message element missing.');
+          return;
+        }
+
+        function filterPosts() {
+  const searchInput = document.getElementById('search') as HTMLInputElement | null;
   const postList = document.querySelectorAll('.post-item');
-  const noResultsMessage = document.getElementById('no-results');
+  const noResultsMessage = document.getElementById('no-results') as HTMLElement | null;
 
-  if (!searchInput) {
-    console.error('Search input field not found.');
+  if (!searchInput || !noResultsMessage) {
+    console.error('Search input or no-results message not found.');
     return;
   }
 
-  if (!noResultsMessage) {
-    console.error('No results message element not found.');
-    return;
-  }
-
-  const searchValue = searchInput.value?.trim().toLowerCase() || ''; 
-  
+  const searchValue = searchInput.value.trim().toLowerCase();
   let matchesFound = false;
 
   postList.forEach((post) => {
     const titleElement = post.querySelector('.title');
+    if (!titleElement) return;
 
-    if (!titleElement) {
-      console.warn('Post title element not found for an item.');
-      return;
-    }
-
-    const titleText = titleElement.textContent?.toLowerCase() || ''; 
-    
+    const titleText = titleElement.textContent?.toLowerCase() || '';
     if (titleText.includes(searchValue)) {
-      post.style.display = 'block'; 
+      (post as HTMLElement).style.display = 'block';
       matchesFound = true;
     } else {
-      post.style.display = 'none'; 
+      (post as HTMLElement).style.display = 'none';
     }
   });
 
-  if (searchValue === '') {
-    noResultsMessage.style.display = 'none';
-  } else {
-    noResultsMessage.style.display = matchesFound ? 'none' : 'block';
-  }
+  noResultsMessage.style.display = matchesFound ? 'none' : 'block';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  const searchInput = document.getElementById('search');
-  if (searchInput) {
-    searchInput.addEventListener('input', filterPosts);
-  } else {
-    console.error('Search input field not found on DOMContentLoaded.');
-  }
-});
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const searchInput = document.getElementById('search');
-      if (searchInput) {
         searchInput.addEventListener('input', filterPosts);
-      } else {
-        console.error('Search input field not found on DOMContentLoaded.');
-      }
-    });
-  </script>
-    </main>
-    <Footer />
+      });
+    </script>
+  </main>
+  <Footer />
 </body>
+
 </html>
