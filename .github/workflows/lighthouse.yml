@@ -21,6 +21,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
             name: lighthouse-ci-report
-            path: lighthouse-ci-report.json
+            path: dist/
+
 
     
