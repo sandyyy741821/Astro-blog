@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "ci:lighthouse": "npm run build && npx lhci autorun --collect.startServerCommand='npm run preview' --collect.url='http://localhost:3000'"
+    "ci:lighthouse": "lhci autorun"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11"

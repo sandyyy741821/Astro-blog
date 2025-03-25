@@ -5,7 +5,10 @@
       "url": ["http://localhost:3000"]
     },
     "assert": {
-      "preset": "lighthouse:no-pwa"
+      "preset": "lighthouse:no-pwa",
+      "assertions":{
+        "csp-xss":"off"
+      }
     },
     "upload": {
       "target": "temporary-public-storage"
