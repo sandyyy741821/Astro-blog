@@ -21,7 +21,7 @@ jobs:
          run: npm run ci:lighthouse
  
        - name: Upload Lighthouse Report
-         uses: actions/upload-artifact@v3
+         uses: actions/upload-artifact@v4
          with:
            name: lighthouse-report
            path: .lighthouseci/
