@@ -1,17 +1,18 @@
-// eslint.config.js
-import astro from "eslint-plugin-astro";
+
+
 import js from "@eslint/js";
+import astro from "eslint-plugin-astro";
 
 export default [
-  js.configs.recommended, // Use ESLint recommended rules
-  astro.configs.recommended, // Astro plugin recommended rules
+  js.configs.recommended,
+  astro.configs.recommended,
   {
     files: ["**/*.astro"],
     languageOptions: {
       parser: astro.parser,
-      parserOptions: {
-        extraFileExtensions: [".astro"],
-      },
     },
+  },
+  {
+    ignores: ["node_modules/", "dist/"],
   },
 ];

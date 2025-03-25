@@ -1,6 +1,5 @@
-import { defineConfig } from "astro/config";
+import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: "http://localhost:4321/", // Change to your actual site URL
+  site: 'http://localhost:4321/',
 });
-
