@@ -1,3 +1,4 @@
+
 name: CI
 on: [push]
 jobs:
@@ -16,3 +17,10 @@ jobs:
           npm run build
       - name: run Lighthouse CI
         run: npm run ci:lighthouse
+      - name: Upload Lighthouse CI report
+        uses: actions/upload-artifact@v3
+        with:
+            name: lighthouse-ci-report
+            path: lighthouse-ci-report.json
+
+    
