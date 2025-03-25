@@ -2,26 +2,28 @@
 name: CI
 on: [push]
 jobs:
-  lhci:
-    name: Lighthouse
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-      - name: npm install, build
-        run: |
-          npm install
-          npm run build
-      - name: run Lighthouse CI
-        run: npm run ci:lighthouse
-      - name: Upload Lighthouse CI report
-        uses: actions/upload-artifact@v3
-        with:
-            name: lighthouse-ci-report
-            path: dist/
-
-
-    
+   lighthouse_audit:
+     runs-on: ubuntu-latest
+ 
+     steps:
+       - name: Checkout Code
+         uses: actions/checkout@v3
+        
+       - name: Set up Node.js
+         uses: actions/setup-node@v3
+         with:
+           node-version: '18'
+ 
+       - name: Install Lighthouse CI
+         run: npm install -g @lhci/cli
+ 
+       - name: Run Lighthouse Audit
+         run: lhci autorun --collect.staticDistDir=./dist
+ 
+       - name: Upload Lighthouse Report
+         uses: actions/upload-artifact@v3
+         with:
+           name: lighthouse-report
+           path: .lighthouseci/
+ 
+ 
