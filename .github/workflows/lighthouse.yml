@@ -44,6 +44,11 @@ jobs:
             exit 1
           fi
 
+      - name: Update lighthouserc.json with URLs
+        run: |
+            urls=$(cat .lighthouseci/urls.txt | jq -R -s -c 'split("\n")[:-1]')
+            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc.json > tmp.json && mv tmp.json lighthouserc.json
+
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
