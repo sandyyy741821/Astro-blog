@@ -48,9 +48,14 @@ jobs:
 
       - name: List LHCI Reports
         run: ls -la .lighthouseci
+      
+      - name: Debug .lighthouseci contents
+        run: |
+          echo "Listing .lighthouseci contents:"
+          ls -la .lighthouseci
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: .lighthouseci/**
+          path: .lighthouseci/*
