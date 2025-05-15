@@ -1,29 +1,30 @@
-
 name: CI
-on: [push]
+
+on:
+  push:
+  workflow_dispatch:
+
 jobs:
-   lighthouse_audit:
-     runs-on: ubuntu-latest
- 
-     steps:
-       - name: Checkout Code
-         uses: actions/checkout@v3
-        
-       - name: Set up Node.js
-         uses: actions/setup-node@v3
-         with:
-           node-version: '18'
- 
-       - name: Install Lighthouse CI
-         run: npm install -g @lhci/cli
- 
-       - name: Run Lighthouse Audit
-         run: npm run ci:lighthouse
- 
-       - name: Upload Lighthouse Report
-         uses: actions/upload-artifact@v4
-         with:
-           name: lighthouse-report
-           path: .lighthouseci/
- 
- 
+  lighthouse_audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install Lighthouse CI
+        run: npm install -g @lhci/cli
+
+      - name: Run Lighthouse Audit
+        run: npm run ci:lighthouse
+
+      - name: Upload Lighthouse Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: .lighthouseci/
