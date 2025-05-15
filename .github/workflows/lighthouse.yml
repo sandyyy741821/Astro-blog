@@ -37,14 +37,22 @@ jobs:
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli
 
+      - name: Install wait-on
+        run: npm install -g wait-on
+
       - name: Serve & Run Lighthouse Audit
         run: |
           serve dist -l 4321 &         # Start server on port 4321 in background
-          sleep 5                      # Wait for server to be ready
-          lhci autorun
+          wait-on http://localhost:4321                  # Wait for server to be ready
+          lhci collect --url=$(sed -e 's|^|http://localhost:4321|' .lighthouseci/urls.txt | tr '\n' ',' | sed 's/,$//')
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
           path: .lighthouseci/
+      
+      - name: List LHCI reports
+        run: ls -la .lighthouseci
+
+
