@@ -28,7 +28,7 @@ jobs:
 
       - name: Serve & Run Lighthouse Audit
         run: |
-          serve dist -l 8080 &  # Start server on port 8080
+          serve dist -l 4321 &  # Start server on port 8080
           sleep 5               # Wait for server to start
           lhci collect
 
