@@ -49,6 +49,7 @@ jobs:
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
           jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-tablet.json > tmp && mv tmp lighthouserc-tablet.json
 
+          
       - name: Update lighthouserc-laptop.json with URLs
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
