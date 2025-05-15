@@ -46,13 +46,13 @@ jobs:
 
       - name: Update lighthouserc-tablet.json with URLs
         run: |
-            urls=$(cat .lighthouseci/urls.txt | jq -R -s -c 'split("\n")[:-1]')
-            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-tablet.json > tmp.json && mv tmp.json lighthouserc-tablet.json
+          urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-tablet.json > tmp && mv tmp lighthouserc-tablet.json
 
       - name: Update lighthouserc-laptop.json with URLs
         run: |
-            urls=$(cat .lighthouseci/urls.txt | jq -R -s -c 'split("\n")[:-1]')
-            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-laptop.json > tmp.json && mv tmp.json lighthouserc-laptop.json
+          urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-laptop.json > tmp && mv tmp lighthouserc-laptop.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
