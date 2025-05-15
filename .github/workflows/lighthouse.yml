@@ -53,10 +53,9 @@ jobs:
           serve dist -l 4321 &
           wait-on http://localhost:4321
           cd ${{ github.workspace }}
-          echo "Running LHCI autorun (collect, assert, upload)..."
-          lhci collect --config=lighthouserc.json $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
-          lhci assert --config=lighthouserc.json || echo "Assertions failed but not breaking the pipeline."
-          lhci upload --config=lighthouserc.json
+          echo "Running LHCI autorun (collectMatrix)..."
+          lhci autorun --config=lighthouserc.json --collect.url="$(cat .lighthouseci/urls.txt | tr '\n' ',' | sed 's/,$//')"
+
 
 
       - name: List LHCI Reports
