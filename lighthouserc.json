@@ -17,7 +17,8 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": ".lighthouseci"
+      "outputDir": ".lighthouseci",
+      "reportFilenamePattern": "[name].report.[ext]"
     }
   }
 }
