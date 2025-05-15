@@ -2,7 +2,8 @@
   "ci": {
     "preset": "lighthouse:recommended",
     "collect": {
-      "outputDir": ".lighthouseci"
+      "outputDir": ".lighthouseci",
+      "staticDistDir": "dist"
     },
     "assert": {
       "assertions": {
