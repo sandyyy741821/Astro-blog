@@ -22,7 +22,7 @@
               },
               "upload": {
                 "target": "filesystem",
-                "outputDir": "./lhci-report-desktop"
+                "outputDir": "./lhci-report-laptop"
               },
               "collectMatrix": [
                 {
