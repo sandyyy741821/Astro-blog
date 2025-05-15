@@ -26,14 +26,11 @@ jobs:
       - name: Generate LHCI URLs file
         run: |
           mkdir -p .lighthouseci
-          # Find all HTML files in dist and convert to URLs
-          find dist -name '*.html' | sed 's|dist||' > .lighthouseci/urls.txt
-          # Add root URL "/" if not present
-          if ! grep -q "^/$" .lighthouseci/urls.txt; then
-            echo "/" >> .lighthouseci/urls.txt
-          fi
-          echo "Lighthouse test URLs:"
+          # Extract paths and convert to clean URLs
+          find dist -name '*.html' | sed -E 's|dist(/index)?\.html$|/|; s|dist/(.*)\.html$|/\1/|' > .lighthouseci/urls.txt
+          echo "Lighthouse URLs:"
           cat .lighthouseci/urls.txt
+
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
