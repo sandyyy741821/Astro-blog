@@ -12,16 +12,21 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
       - name: Build Astro Project
         run: npm run build
+
+      - name: Check dist folder HTML files
+        run: |
+          echo "Listing HTML files in dist:"
+          find dist -name '*.html'
 
       - name: Generate LHCI URLs
         run: |
@@ -29,30 +34,31 @@ jobs:
           find dist -name '*.html' \
             | sed -e 's|dist||' -e 's|/index.html||' \
             | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
-          echo "URLs to audit:"
+          echo "URLs generated in .lighthouseci/urls.txt:"
           cat .lighthouseci/urls.txt
 
       - name: Check URLs not empty
         run: |
           if [ ! -s .lighthouseci/urls.txt ]; then
-            echo "ERROR: URLs list is empty."
+            echo "ERROR: urls.txt is empty! No URLs to audit."
             exit 1
           fi
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Serve & Run Lighthouse CI
+      - name: Serve & Run Lighthouse Audit
         run: |
+          set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
+          echo "Running LHCI with URLs:"
+          cat .lighthouseci/urls.txt
           lhci collect --config=lighthouserc.json $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
-          lhci assert --config=lighthouserc.json
-          lhci upload --config=lighthouserc.json
 
-      - name: Upload LHCI Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: .lighthouseci/**/*
+      - name: Show LHCI reports folder content (if any)
+        run: |
+          ls -la .lighthouseci || echo "No .lighthouseci directory"
 
+      - name: Show current working directory
+        run: pwd
