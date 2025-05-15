@@ -70,5 +70,10 @@ jobs:
               - ".lighthouseci/*.html"
               - ".lighthouseci/*.json"
 
-
+      - name: Show files to be uploaded
+        run: |
+          echo "HTML files:"
+          ls .lighthouseci/*.html || echo "No html files found"
+          echo "JSON files:"
+          ls .lighthouseci/*.json || echo "No json files found"
 
