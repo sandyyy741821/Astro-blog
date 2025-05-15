@@ -58,7 +58,9 @@ jobs:
 
 
       - name: List LHCI Reports
-        run: ls -la .lighthouseci
+        run: |
+          ls -la .lighthouseci
+          cat .lighthouseci/*.html
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
