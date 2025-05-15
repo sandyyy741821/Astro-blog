@@ -44,40 +44,47 @@ jobs:
             exit 1
           fi
 
-      - name: Update lighthouserc.json with URLs
+      - name: Update lighthouserc-tablet.json with URLs
         run: |
             urls=$(cat .lighthouseci/urls.txt | jq -R -s -c 'split("\n")[:-1]')
-            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc.json > tmp.json && mv tmp.json lighthouserc.json
+            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-tablet.json > tmp.json && mv tmp.json lighthouserc-tablet.json
+
+      - name: Update lighthouserc-laptop.json with URLs
+        run: |
+            urls=$(cat .lighthouseci/urls.txt | jq -R -s -c 'split("\n")[:-1]')
+            jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-laptop.json > tmp.json && mv tmp.json lighthouserc-laptop.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Serve & Run Lighthouse Audit
+      - name: Serve & Run Lighthouse Audit for Tablet
         run: |
           set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
           cd ${{ github.workspace }}
           echo "Running LHCI autorun (collectMatrix)..."
-          lhci autorun --config=lighthouserc.json 
+          lhci autorun --config=lighthouserc-tablet.json 
 
-
-
-
-      - name: List LHCI Reports
+      - name: Serve & Run Lighthouse Audit for Laptop
         run: |
-          ls -la lhci-report
-          du -sh lhci-report/* || echo "No report files found"
+          set -x
+          serve dist -l 4321 &
+          wait-on http://localhost:4321
+          cd ${{ github.workspace }}
+          echo "Running LHCI autorun (collectMatrix)..."
+          lhci autorun --config=lighthouserc-laptop.json 
 
-      - name: Upload Lighthouse Report
+      - name: Upload Lighthouse Tablet Report
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-report
-          path: lhci-report
+          name: lighthouse-report-tablet
+          path: lhci-report-tablet
 
-      - name: Show files to be uploaded
-        run: |
-          echo "Report HTML files:"
-          ls lhci-report/*.html || echo "No html files found"
-          echo "Report JSON files:"
-          ls lhci-report/*.json || echo "No json files found"
+      - name: Upload Lighthouse Laptop Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report-laptop
+          path: lhci-report-laptop
+
+
