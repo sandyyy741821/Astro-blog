@@ -57,7 +57,6 @@ jobs:
           lhci autorun --config=lighthouserc.json
 
 
-
       - name: List LHCI Reports
         run: |
           ls -la lhci-report
