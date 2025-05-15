@@ -2,9 +2,9 @@
   "ci": {
     "collect": {
       "url": [
-        "http://localhost:8080/",
-        "http://localhost:8080/blog",
-        "http://localhost:8080/about"
+        "http://localhost:4321/",
+        "http://localhost:4321/blog",
+        "http://localhost:4321/about"
       ]
     },
     "assert": {
