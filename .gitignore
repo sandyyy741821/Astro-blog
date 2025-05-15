@@ -24,8 +24,6 @@ pnpm-debug.log*
 .idea/
 
 
-main.yml
-
 # Ignore everything in .lighthouseci...
 .lighthouseci/*
 
