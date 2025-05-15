@@ -23,14 +23,25 @@ jobs:
       - name: Build Astro Project
         run: npm run build
 
-      - name: Install Static Server
-        run: npm install -g serve
+      - name: Generate LHCI URLs file
+        run: |
+          mkdir -p .lighthouseci
+          # Find all HTML files in dist and convert to URLs
+          find dist -name '*.html' | sed 's|dist||' > .lighthouseci/urls.txt
+          # Add root URL "/" if not present
+          if ! grep -q "^/$" .lighthouseci/urls.txt; then
+            echo "/" >> .lighthouseci/urls.txt
+          fi
+          cat .lighthouseci/urls.txt
+
+      - name: Install Static Server and LHCI CLI
+        run: npm install -g serve @lhci/cli
 
       - name: Serve & Run Lighthouse Audit
         run: |
-          serve dist -l 4321 &  # Start server on port 8080
-          sleep 5               # Wait for server to start
-          lhci collect
+          serve dist -l 4321 &         # Start server on port 4321 in background
+          sleep 5                      # Wait for server to be ready
+          lhci collect --staticDistDir=dist --serverBaseUrl=http://localhost:4321 --upload.target=temporary-public-storage
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
