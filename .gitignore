@@ -24,3 +24,12 @@ pnpm-debug.log*
 .idea/
 
 
+main.yml
+
+# Ignore everything in .lighthouseci...
+.lighthouseci/*
+
+# ...except HTML and JSON report files (override the above)
+!.lighthouseci/*.html
+!.lighthouseci/*.json
+
