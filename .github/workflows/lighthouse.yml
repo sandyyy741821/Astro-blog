@@ -38,12 +38,13 @@ jobs:
 
       - name: Serve & Run Lighthouse Audit
         run: |
-          set -x  # <== Add debug logging
+          set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
           echo "Running LHCI with URLs:"
           cat .lighthouseci/urls.txt
-          lhci collect $(sed -e 's|^|--url=http://localhost:4321|' .lighthouseci/urls.txt)
+          lhci collect $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
+
 
       - name: List LHCI Reports
         run: ls -la .lighthouseci
