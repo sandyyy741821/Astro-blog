@@ -56,7 +56,6 @@ jobs:
           cat .lighthouseci/urls.txt
           lhci collect --config=lighthouserc.json $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
 
-
       - name: List LHCI Reports
         run: |
           ls -la .lighthouseci
@@ -66,9 +65,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: |
-              - .lighthouseci/*.html
-              - .lighthouseci/*.json
+          path: ".lighthouseci/*.html,.lighthouseci/*.json"
+
 
       - name: Show files to be uploaded
         run: |
@@ -76,4 +74,3 @@ jobs:
           ls .lighthouseci/*.html || echo "No html files found"
           echo "JSON files:"
           ls .lighthouseci/*.json || echo "No json files found"
-
