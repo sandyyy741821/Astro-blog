@@ -68,7 +68,8 @@ jobs:
           path: .lighthouseci/**/*.*
 
 
-
+      - name: Show current working directory
+        run: pwd
 
       - name: Show files to be uploaded
         run: |
