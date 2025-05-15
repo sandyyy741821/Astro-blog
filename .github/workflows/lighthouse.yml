@@ -41,7 +41,8 @@ jobs:
         run: |
           serve dist -l 4321 &         # Start server on port 4321 in background
           sleep 5                      # Wait for server to be ready
-          lhci collect --staticDistDir=dist --serverBaseUrl=http://localhost:4321 --upload.target=temporary-public-storage
+          lhci collect --staticDistDir=dist --serverBaseUrl=http://localhost:4321 
+          lhci upload --target=filesystem
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
