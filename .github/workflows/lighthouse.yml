@@ -23,14 +23,15 @@ jobs:
       - name: Build Astro Project
         run: npm run build
 
-      - name: Generate LHCI URLs file
+      - name: Generate LHCI URLs
         run: |
           mkdir -p .lighthouseci
-          # Extract paths and convert to clean URLs
-          find dist -name '*.html' | sed -E 's|dist/index\.html$|/|; s|dist/(.*)/index\.html$|/\1/|; s|dist/(.*)\.html$|/\1|' > .lighthouseci/urls.txt
-          echo "Lighthouse URLs:"
-          cat .lighthouseci/urls.txt
+          find dist -name '*.html' \
+            | sed -e 's|dist||' -e 's|/index.html||' \
+            | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
 
+      - name: Show LHCI URLs
+        run: cat .lighthouseci/urls.txt
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
@@ -43,8 +44,6 @@ jobs:
           echo "Running LHCI with URLs:"
           cat .lighthouseci/urls.txt
           lhci collect $(sed -e 's|^|--url=http://localhost:4321|' .lighthouseci/urls.txt)
-
-
 
       - name: List LHCI Reports
         run: ls -la .lighthouseci
