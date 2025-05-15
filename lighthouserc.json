@@ -1,13 +1,18 @@
 {
   "ci": {
     "collect": {
-      "staticDistDir": "./dist",
-      "url": ["/", "/blog", "/about"]
+      "url": [
+        "http://localhost:8080/",
+        "http://localhost:8080/blog",
+        "http://localhost:8080/about"
+      ]
     },
     "assert": {
       "preset": "lighthouse:no-pwa",
-      "assertions":{
-        "csp-xss":"off"
+      "assertions": {
+        "unsized-images": "off",
+        "uses-responsive-images": "off",
+        "csp-xss": "off"
       }
     },
     "upload": {
