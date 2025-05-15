@@ -55,7 +55,7 @@ jobs:
           cd ${{ github.workspace }}
           echo "Running LHCI autorun (collectMatrix)..."
           while IFS= read -r url; do
-            lhci autorun --config=lighthouserc.json --collect.url="$url"
+            lhci autorun --config=lighthouserc.json 
           done < .lighthouseci/urls.txt
 
 
