@@ -3,7 +3,7 @@
     "preset": "lighthouse:recommended",
     "collect": {
       "staticDistDir": "./dist",
-      "url": [], 
+      "url": [],
       "numberOfRuns": 1
     },
     "assert": {

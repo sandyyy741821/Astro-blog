@@ -58,22 +58,18 @@ jobs:
 
       - name: List LHCI Reports
         run: |
-          ls -la .lighthouseci
-          du -sh .lighthouseci/*
+          ls -la lhci-report
+          du -sh lhci-report/* || echo "No report files found"
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: ${{ env.PROJECT_DIR }}/lhci-report
-
-
-
+          path: lhci-report
 
       - name: Show files to be uploaded
         run: |
-          echo "HTML files:"
-          ls .lighthouseci/*.html || echo "No html files found"
-          echo "JSON files:"
-          ls .lighthouseci/*.json || echo "No json files found"
-
+          echo "Report HTML files:"
+          ls lhci-report/*.html || echo "No html files found"
+          echo "Report JSON files:"
+          ls lhci-report/*.json || echo "No json files found"
