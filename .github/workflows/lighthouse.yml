@@ -39,7 +39,8 @@ jobs:
         run: |
           serve dist -l 4321 &         # Start server in background
           wait-on http://localhost:4321
-          lhci collect --url=$(sed -e 's|^|http://localhost:4321|' .lighthouseci/urls.txt | tr '\n' ',' | sed 's/,$//')
+          lhci collect $(sed -e 's|^|--url=http://localhost:4321|' .lighthouseci/urls.txt)
+
 
       - name: List LHCI Reports
         run: ls -la .lighthouseci
