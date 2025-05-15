@@ -25,7 +25,6 @@ jobs:
 
       - name: Generate LHCI URLs
         run: |
-          mkdir -p .lighthouseci
           find dist -name '*.html' \
             | sed -e 's|dist||' -e 's|/index.html||' \
             | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
