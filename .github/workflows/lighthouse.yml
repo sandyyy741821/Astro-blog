@@ -1,101 +1,79 @@
-name: Lighthouse CI Audit
+name: CI
 
 on:
-  workflow_dispatch:
   push:
+  workflow_dispatch:
 
 jobs:
   lighthouse_audit:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        formFactor: [desktop, tablet]
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Find Project Directory
-        id: find_dir
-        run: |
-          PROJECT_DIR=$(find . -name "package.json" -exec dirname {} \; | head -n 1)
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-      - name: Install dependencies and LHCI
-        run: |
-          cd ${{ env.PROJECT_DIR }}
-          npm install
-          npm install -g @lhci/cli serve wait-on
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Build Astro project
-        run: |
-          cd ${{ env.PROJECT_DIR }}
-          npm run build
+      - name: Build Astro Project
+        run: npm run build
 
-      - name: Generate URLs
+      - name: Check dist folder HTML files
         run: |
-          cd ${{ env.PROJECT_DIR }}
+          echo "Listing HTML files in dist:"
+          find dist -name '*.html'
+
+      - name: Generate LHCI URLs
+        run: |
           mkdir -p .lighthouseci
           find dist -name '*.html' \
             | sed -e 's|dist||' -e 's|/index.html||' \
             | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
+          echo "URLs generated in .lighthouseci/urls.txt:"
           cat .lighthouseci/urls.txt
 
-      - name: Create Lighthouse CI Config for ${{ matrix.formFactor }}
+      - name: Check URLs not empty
         run: |
-          cd ${{ env.PROJECT_DIR }}
-
-          if [ "${{ matrix.formFactor }}" = "desktop" ]; then
-            WIDTH=1350
-            HEIGHT=940
-            DSF=1
-            MOBILE=false
-          else
-            WIDTH=768
-            HEIGHT=1024
-            DSF=2
-            MOBILE=true
+          if [ ! -s .lighthouseci/urls.txt ]; then
+            echo "ERROR: urls.txt is empty! No URLs to audit."
+            exit 1
           fi
 
-          cat << EOF > lighthouserc.json
-          {
-            "ci": {
-              "collect": {
-                "staticDistDir": "./dist",
-                "settings": {
-                  "formFactor": "${{ matrix.formFactor }}",
-                  "screenEmulation": {
-                    "width": $WIDTH,
-                    "height": $HEIGHT,
-                    "deviceScaleFactor": $DSF,
-                    "mobile": $MOBILE,
-                    "disabled": false
-                  }
-                }
-              },
-              "upload": {
-                "target": "filesystem",
-                "outputDir": "./lhci-report-${{ matrix.formFactor }}"
-              },
-              "assert": {
-                "assertions": {
-                  "categories:performance": ["warn", { "minScore": 0.5 }],
-                  "categories:accessibility": ["warn", { "minScore": 0.3 }]
-                }
-              }
-            }
-          }
-          EOF
+      - name: Install Static Server and LHCI CLI
+        run: npm install -g serve @lhci/cli wait-on
 
-      - name: Serve static dist and run LHCI collect for ${{ matrix.formFactor }}
+      - name: Serve & Run Lighthouse Audit
         run: |
-          cd ${{ env.PROJECT_DIR }}
+          set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
+          echo "Running LHCI with URLs:"
+          cat .lighthouseci/urls.txt
           lhci collect --config=lighthouserc.json $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
 
-      - name: Upload Lighthouse report (${{ matrix.formFactor }})
+      - name: List LHCI Reports
+        run: |
+          ls -la .lighthouseci
+          du -sh .lighthouseci/*
+
+      - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-report-${{ matrix.formFactor }}
-          path: ${{ env.PROJECT_DIR }}/lhci-report-${{ matrix.formFactor }}
+          name: lighthouse-report
+          path: ${{ env.PROJECT_DIR }}/lhci-report
+
+
+
+
+      - name: Show files to be uploaded
+        run: |
+          echo "HTML files:"
+          ls .lighthouseci/*.html || echo "No html files found"
+          echo "JSON files:"
+          ls .lighthouseci/*.json || echo "No json files found"
+
