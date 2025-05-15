@@ -1,6 +1,9 @@
 {
   "ci": {
     "preset": "lighthouse:recommended",
+    "collect": {
+      "outputDir": ".lighthouseci"
+    },
     "assert": {
       "assertions": {
         "unsized-images": "off",
