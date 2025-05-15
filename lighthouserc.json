@@ -1,5 +1,6 @@
 {
   "ci": {
+    "preset": "lighthouse:recommended",
     "assert": {
       "assertions": {
         "unsized-images": "off",
