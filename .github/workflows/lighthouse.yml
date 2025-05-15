@@ -54,7 +54,7 @@ jobs:
           wait-on http://localhost:4321
           echo "Running LHCI with URLs:"
           cat .lighthouseci/urls.txt
-          lhci collect $(sed -e 's|^|--url=|' .lighthouseci/urls.txt) --output .lighthouseci
+          lhci collect $(sed -e 's|^|--url=|' .lighthouseci/urls.txt) 
 
       - name: List LHCI Reports
         run: ls -la .lighthouseci

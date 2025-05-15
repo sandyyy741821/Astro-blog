@@ -2,8 +2,9 @@
   "ci": {
     "preset": "lighthouse:recommended",
     "collect": {
-      "outputDir": ".lighthouseci/",
-      "staticDistDir": "dist"
+      "staticDistDir": "dist",
+      "url": [], 
+      "numberOfRuns": 1
     },
     "assert": {
       "assertions": {
@@ -21,7 +22,36 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": ".lighthouseci/"
-    }
+      "outputDir": ".lighthouseci/",
+      "reportFilenamePattern": "[name]-[configName].report.[ext]"
+    },
+    "collectMatrix": [
+      {
+        "name": "desktop",
+        "settings": {
+          "formFactor": "desktop",
+          "screenEmulation": {
+            "width": 1350,
+            "height": 940,
+            "deviceScaleFactor": 1,
+            "mobile": false,
+            "disabled": false
+          }
+        }
+      },
+      {
+        "name": "tablet",
+        "settings": {
+          "formFactor": "mobile",
+          "screenEmulation": {
+            "width": 768,
+            "height": 1024,
+            "deviceScaleFactor": 2,
+            "mobile": true,
+            "disabled": false
+          }
+        }
+      }
+    ]
   }
 }
