@@ -32,27 +32,23 @@ jobs:
           if ! grep -q "^/$" .lighthouseci/urls.txt; then
             echo "/" >> .lighthouseci/urls.txt
           fi
+          echo "Lighthouse test URLs:"
           cat .lighthouseci/urls.txt
 
       - name: Install Static Server and LHCI CLI
-        run: npm install -g serve @lhci/cli
-
-      - name: Install wait-on
-        run: npm install -g wait-on
+        run: npm install -g serve @lhci/cli wait-on
 
       - name: Serve & Run Lighthouse Audit
         run: |
-          serve dist -l 4321 &         # Start server on port 4321 in background
-          wait-on http://localhost:4321                  # Wait for server to be ready
+          serve dist -l 4321 &         # Start server in background
+          wait-on http://localhost:4321
           lhci collect --url=$(sed -e 's|^|http://localhost:4321|' .lighthouseci/urls.txt | tr '\n' ',' | sed 's/,$//')
+
+      - name: List LHCI Reports
+        run: ls -la .lighthouseci
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
           path: .lighthouseci/
-      
-      - name: List LHCI reports
-        run: ls -la .lighthouseci
-
-
