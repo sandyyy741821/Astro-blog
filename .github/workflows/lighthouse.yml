@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: ".lighthouseci/*.html,.lighthouseci/*.json"
+          path: ".lighthouseci"
 
 
       - name: Show files to be uploaded
@@ -74,3 +74,4 @@ jobs:
           ls .lighthouseci/*.html || echo "No html files found"
           echo "JSON files:"
           ls .lighthouseci/*.json || echo "No json files found"
+

@@ -22,7 +22,7 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": ".lighthouseci/",
+      "outputDir": ".lighthouseci",
       "reportFilenamePattern": "[name]-[configName].report.[ext]"
     },
     "collectMatrix": [
