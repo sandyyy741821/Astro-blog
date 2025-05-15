@@ -12,21 +12,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm ci
 
       - name: Build Astro Project
         run: npm run build
-
-      - name: Check dist folder HTML files
-        run: |
-          echo "Listing HTML files in dist:"
-          find dist -name '*.html'
 
       - name: Generate LHCI URLs
         run: |
@@ -34,47 +29,30 @@ jobs:
           find dist -name '*.html' \
             | sed -e 's|dist||' -e 's|/index.html||' \
             | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
-          echo "URLs generated in .lighthouseci/urls.txt:"
+          echo "URLs to audit:"
           cat .lighthouseci/urls.txt
 
       - name: Check URLs not empty
         run: |
           if [ ! -s .lighthouseci/urls.txt ]; then
-            echo "ERROR: urls.txt is empty! No URLs to audit."
+            echo "ERROR: URLs list is empty."
             exit 1
           fi
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Serve & Run Lighthouse Audit
+      - name: Serve & Run Lighthouse CI
         run: |
-          set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          echo "Running LHCI with URLs:"
-          cat .lighthouseci/urls.txt
           lhci collect --config=lighthouserc.json $(sed -e 's|^|--url=|' .lighthouseci/urls.txt)
+          lhci assert --config=lighthouserc.json
+          lhci upload --config=lighthouserc.json
 
-      - name: List LHCI Reports
-        run: |
-          ls -la .lighthouseci
-          du -sh .lighthouseci/*
-
-      - name: Upload Lighthouse Report
+      - name: Upload LHCI Reports
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: .lighthouseci/**/*.*
-
-
-      - name: Show current working directory
-        run: pwd
-
-      - name: Show files to be uploaded
-        run: |
-          echo "HTML files:"
-          ls .lighthouseci/*.html || echo "No html files found"
-          echo "JSON files:"
-          ls .lighthouseci/*.json || echo "No json files found"
+          path: .lighthouseci/**/*
 
