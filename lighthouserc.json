@@ -12,7 +12,10 @@
       "assertions": {
         "unsized-images": "off",
         "uses-responsive-images": "off",
-        "csp-xss": "off"
+        "csp-xss": "off",
+        "uses-long-cache-ttl": ["warn", { "maxLength": 2 }],
+        "categories:performance": ["warn", { "minScore": 0.9 }],
+        "categories:accessibility": ["warn", { "minScore": 0.5 }]
       }
     },
     "upload": {
