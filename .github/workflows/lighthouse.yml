@@ -63,12 +63,17 @@ jobs:
         run: |
           echo "Listing .lighthouseci contents:"
           ls -la .lighthouseci/
+          
+      - name: Find latest HTML report
+        id: find_html
+        run: |
+          # Find the latest .html file inside .lighthouseci/
+          FILE=$(ls -t .lighthouseci/*.html | head -1)
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+
 
       - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report
-          path: |
-            .lighthouseci/urls.txt
-            .lighthouseci/*.html
-            .lighthouseci/*.json
+          path: ${{ steps.find_html.outputs.file }}
