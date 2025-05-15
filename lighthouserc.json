@@ -22,8 +22,7 @@
     },
     "upload": {
       "target": "filesystem",
-      "outputDir": "./lhci-report",
-      "reportFilenamePattern": "[name]-[configName].report.[ext]"
+      "outputDir": "./lhci-report"
     },
     "collectMatrix": [
       {
