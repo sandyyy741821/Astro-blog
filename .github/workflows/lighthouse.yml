@@ -27,7 +27,7 @@ jobs:
         run: |
           mkdir -p .lighthouseci
           # Extract paths and convert to clean URLs
-          find dist -name '*.html' | sed -E 's|dist(/index)?\.html$|/|; s|dist/(.*)\.html$|/\1/|' > .lighthouseci/urls.txt
+          find dist -name '*.html' | sed -E 's|dist/index\.html$|/|; s|dist/(.*)/index\.html$|/\1/|; s|dist/(.*)\.html$|/\1|' > .lighthouseci/urls.txt
           echo "Lighthouse URLs:"
           cat .lighthouseci/urls.txt
 
