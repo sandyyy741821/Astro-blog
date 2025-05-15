@@ -52,9 +52,10 @@ jobs:
           set -x
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          cd ${{ env.PROJECT_DIR }}
+          cd ${{ github.workspace }}
           echo "Running LHCI autorun (collect, assert, upload)..."
           lhci autorun --config=lighthouserc.json
+
 
 
       - name: List LHCI Reports
