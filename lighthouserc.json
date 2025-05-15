@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "staticDistDir": "./dist",
-      "url": ["http://localhost:3000"]
+      "url": ["/", "/blog", "/about"]
     },
     "assert": {
       "preset": "lighthouse:no-pwa",
