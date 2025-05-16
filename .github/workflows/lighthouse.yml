@@ -13,19 +13,19 @@ jobs:
           - name: mobile
             width: 320
             height: 480
-            perset: pref
+            preset: "perf"
           - name: desktop
             width: 1920
             height: 1080
-            preset: desktop
+            preset: "desktop"
           - name: tablet
             width: 1024
             height: 768
-            preset: pref
+            preset: "desktop"
           - name: laptop
             width: 1366
             height: 768
-            preset: desktop
+            preset: "desktop"
 
     steps:
       - name: Checkout Code
@@ -42,9 +42,8 @@ jobs:
       - name: Build Astro Project
         run: npm run build
 
-      - name: Check dist folder HTML files
+      - name: List HTML Files in dist
         run: |
-          echo "Listing HTML files in dist:"
           find dist -name '*.html'
 
       - name: Generate LHCI URLs
@@ -53,17 +52,17 @@ jobs:
           find dist -name '*.html' \
             | sed -e 's|dist||' -e 's|/index.html||' \
             | awk '{print "http://localhost:4321"$0}' > .lighthouseci/urls.txt
-          echo "URLs generated in .lighthouseci/urls.txt:"
+          echo "Generated URLs:"
           cat .lighthouseci/urls.txt
 
-      - name: Check URLs not empty
+      - name: Validate URLs file
         run: |
           if [ ! -s .lighthouseci/urls.txt ]; then
             echo "ERROR: urls.txt is empty! No URLs to audit."
             exit 1
           fi
 
-      - name: Create Lighthouse CI Config
+      - name: Create Lighthouse Config
         run: |
           cat << EOF > .lighthouserc.${{ matrix.formfactor.name }}.json
           {
@@ -84,10 +83,7 @@ jobs:
                   "throttling": {
                     "rttMs": 40,
                     "throughputKbps": 10240,
-                    "cpuSlowdownMultiplier": 1,
-                    "requestLatencyMs": 0,
-                    "downloadThroughputKbps": 0,
-                    "uploadThroughputKbps": 0
+                    "cpuSlowdownMultiplier": 1
                   }
                 }
               },
@@ -99,26 +95,27 @@ jobs:
           }
           EOF
 
-      - name: Update Config with URLs
+      - name: Inject URLs into Config
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.${{matrix.formfactor.name}}.json > tmp && mv tmp .lighthouserc.${{matrix.formfactor.name}}.json
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' \
+            .lighthouserc.${{ matrix.formfactor.name }}.json > tmp && mv tmp .lighthouserc.${{ matrix.formfactor.name }}.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Run Lighthouse Audit - (${{ matrix.formfactor.name }})
+      - name: Run Lighthouse Audit
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.${{matrix.formfactor.name}}.json
+          lhci autorun --config=.lighthouserc.${{ matrix.formfactor.name }}.json
         env:
           PORT: 4321
 
-      - name: Kill Serve (${{ matrix.formfactor.name }})
+      - name: Kill Static Server
         run: kill $(lsof -t -i:4321) || true
 
-      - name: Upload Lighthouse Report
+      - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-report-${{ matrix.formfactor.name }}
