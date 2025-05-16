@@ -11,9 +11,9 @@ jobs:
       matrix:
         formfactor:
           - name: mobile
-            width: default
-            height: default
-            preset: "default"
+            width: 414
+            height: 3200
+            preset: "pref"
             mobile: true
             disabled: true
           - name: desktop
