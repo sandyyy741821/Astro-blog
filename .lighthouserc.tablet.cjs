@@ -1,0 +1,31 @@
+module.exports = {
+  ci: {
+    collect: {
+      numberOfRuns: 1,
+      url: [], 
+      settings: {
+        preset: 'desktop', 
+        emulatedFormFactor: 'tablet',
+        screenEmulation: {
+          mobile: false,
+          width: 768,
+          height: 1024,
+          deviceScaleFactor: 2,
+          disabled: false,
+        },
+        throttling: {
+          rttMs: 40,
+          throughputKbps: 10240,
+          cpuSlowdownMultiplier: 1,
+          requestLatencyMs: 0,
+          downloadThroughputKbps: 0,
+          uploadThroughputKbps: 0,
+        },
+      },
+    },
+    upload: {
+      target: 'filesystem',
+      outputDir: './lhci-report-tablet',
+    },
+  },
+};

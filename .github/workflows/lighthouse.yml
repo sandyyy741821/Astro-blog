@@ -61,7 +61,7 @@ jobs:
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=lighthouserc-tablet.json   --screenEmulation.width=768 --screenEmulation.height=1024 --screenEmulation.deviceScaleRatio=1 --screenEmulation.mobile=false --screenEmulation.disabled=false
+          lhci autorun --config=.lighthouserc.tablet.cjs
         env:
           PORT: 4321
 
@@ -72,7 +72,7 @@ jobs:
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=lighthouserc-laptop.json --screenEmulation.width=1366 --screenEmulation.height=768 --screenEmulation.deviceScaleRatio=1 --screenEmulation.mobile=false --screenEmulation.disabled=false 
+          lhci collect --config=.lighthouserc.laptop.cjs 
         env:
           PORT: 4321
 

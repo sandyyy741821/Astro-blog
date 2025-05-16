@@ -7,7 +7,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "ci:lighthouse": "lhci autorun"
+    "ci:lighthouse": "lhci autorun",
+    "type":"commonJS"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.11"
