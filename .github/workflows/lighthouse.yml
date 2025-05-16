@@ -54,36 +54,48 @@ jobs:
 
       - name: Create Lighthouse Config
         run: |
+          width=${{ matrix.width }}
+          height=${{ matrix.height }}
+
+          if [ "$width" = "default" ]; then
+            width=null
+          fi
+
+          if [ "$height" = "default" ]; then
+            height=null
+          fi
+
           cat << EOF > .lighthouserc.${{ matrix.name }}.json
-          {
-            "ci": {
-              "collect": {
-                "numberOfRuns": 1,
-                "url": [],
-                "settings": {
-                  "preset": "${{ matrix.preset }}",
-                  "emulatedFormFactor": "${{ matrix.name }}",
-                  "screenEmulation": {
-                    "mobile": ${{ matrix.mobile }},
-                    "width": ${{ matrix.width }},
-                    "height": ${{ matrix.height }},
-                    "deviceScaleFactor": 2,
-                    "disabled": ${{ matrix.disabled }}
-                  },
-                  "throttling": {
-                    "rttMs": 40,
-                    "throughputKbps": 10240,
-                    "cpuSlowdownMultiplier": 1
+            {
+              "ci": {
+                "collect": {
+                  "numberOfRuns": 1,
+                  "url": [],
+                  "settings": {
+                    "preset": "${{ matrix.preset }}",
+                    "emulatedFormFactor": "${{ matrix.name }}",
+                    "screenEmulation": {
+                      "mobile": ${{ matrix.mobile }},
+                      "width": $width,
+                      "height": $height,
+                      "deviceScaleFactor": 2,
+                      "disabled": ${{ matrix.disabled }}
+                    },
+                    "throttling": {
+                      "rttMs": 40,
+                      "throughputKbps": 10240,
+                      "cpuSlowdownMultiplier": 1
+                    }
                   }
+                },
+                "upload": {
+                  "target": "filesystem",
+                  "outputDir": "./lhci-report-${{ matrix.name }}"
                 }
-              },
-              "upload": {
-                "target": "filesystem",
-                "outputDir": "./lhci-report-${{ matrix.name }}"
               }
             }
-          }
           EOF
+
 
       - name: Inject URLs into Config
         run: |
