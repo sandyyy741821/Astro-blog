@@ -7,6 +7,9 @@ on:
 jobs:
   lighthouse_audit:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        formfactor: [[mobile,320,480], [desktop,1920,1080], [tablet,1024,768], [laptop,1366,768]]
 
     steps:
       - name: Checkout Code
@@ -44,68 +47,65 @@ jobs:
             exit 1
           fi
 
-      - name: Update Tablet Config with URLs
+      - name: Create Lighthouse CI Config
         run: |
-          urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.tablet.json > tmp && mv tmp .lighthouserc.tablet.json
-
-      - name: Update Laptop Config with URLs
-        run: |
-          urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.laptop.json > tmp && mv tmp .lighthouserc.laptop.json
+          cd ${{ env.PROJECT_DIR }}
+          cat << EOF > .lighthouserc.${{ matrix.formfactor[0] }}.json
+          {
+            "ci": {
+              "collect": {
+                "numberOfRuns": 1,
+                "url": [],
+                "settings": {
+                  "preset": ${{ matrix.formfactor[0] }},
+                  "emulatedFormFactor": "${{ matrix.formfactor[0] }}",
+                  "screenEmulation": {
+                    "mobile": false,
+                    "width": ${{matrix.formfactor[1]}},
+                    "height": ${{matrix.formfactor[2]}},
+                    "deviceScaleFactor": 2,
+                    "disabled": false
+                  },
+                  "throttling": {
+                    "rttMs": 40,
+                    "throughputKbps": 10240,
+                    "cpuSlowdownMultiplier": 1,
+                    "requestLatencyMs": 0,
+                    "downloadThroughputKbps": 0,
+                    "uploadThroughputKbps": 0
+                  }
+                }
+              },
+              "upload": {
+                "target": "filesystem",
+                "outputDir": "./lhci-report-${{ matrix.formfactor[0] }}",
+              }
+            }
+          }
+          EOF
 
       - name: Update desktop Config with URLs
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.desktop.json > tmp && mv tmp .lighthouserc.desktop.json
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.${{matrix.formfactor[0]}}.json > tmp && mv tmp .lighthouserc.${{matrix.formfactor[0]}}.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Run Lighthouse Audit - Tablet
+      - name: Run Lighthouse Audit - (${{ matrix.formfactor[0] }})
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.tablet.json
+          lhci autorun --config=.lighthouserc.${{matrix.formfactor[0]}}.json
         env:
           PORT: 4321
 
-      - name: Kill Serve Tablet
+      - name: Kill Serve (${{ matrix.formfactor[0] }})
         run: kill $(lsof -t -i:4321) || true
 
-      - name: Run Lighthouse Audit - desktop
-        run: |
-          serve dist -l 4321 &
-          wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.desktop.json
-        env:
-          PORT: 4321
-
-      - name: Kill Serve Tablet
-        run: kill $(lsof -t -i:4321) || true
-
-      - name: Run Lighthouse Audit - Laptop
-        run: |
-          serve dist -l 4321 &
-          wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.laptop.json 
-        env:
-          PORT: 4321
 
       - name: Upload Lighthouse Tablet Report
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-report-tablet
-          path: lhci-report-tablet
-
-      - name: Upload Lighthouse desktop Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report-desktop
-          path: lhci-report-desktop
-
-      - name: Upload Lighthouse Laptop Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report-laptop
-          path: lhci-report-laptop
+          name: lighthouse-report-${{ matrix.formfactor[0] }}
+          path: lhci-report-${{ matrix.formfactor[0] }}
