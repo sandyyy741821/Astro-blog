@@ -54,6 +54,11 @@ jobs:
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
           jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.laptop.json > tmp && mv tmp .lighthouserc.laptop.json
 
+      - name: Update desktop Config with URLs
+        run: |
+          urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.desktop.json > tmp && mv tmp .lighthouserc.desktop.json
+
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
@@ -62,6 +67,17 @@ jobs:
           serve dist -l 4321 &
           wait-on http://localhost:4321
           lhci autorun --config=.lighthouserc.tablet.json
+        env:
+          PORT: 4321
+
+      - name: Kill Serve Tablet
+        run: kill $(lsof -t -i:4321) || true
+
+      - name: Run Lighthouse Audit - desktop
+        run: |
+          serve dist -l 4321 &
+          wait-on http://localhost:4321
+          lhci autorun --config=.lighthouserc.desktop.json
         env:
           PORT: 4321
 
@@ -81,6 +97,12 @@ jobs:
         with:
           name: lighthouse-report-tablet
           path: lhci-report-tablet
+
+      - name: Upload Lighthouse desktop Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report-desktop
+          path: lhci-report-desktop
 
       - name: Upload Lighthouse Laptop Report
         uses: actions/upload-artifact@v4
