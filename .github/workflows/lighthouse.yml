@@ -9,31 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        formfactor:
-          - name: mobile
-            width: 320
-            height: 480
-            preset: "experimental"
-            mobile: true
-            disabled: true
-          - name: desktop
-            width: 1920
-            height: 1080
-            preset: "desktop"
-            mobile: false
-            disabled: false
-          - name: tablet
-            width: 1024
-            height: 768
-            preset: "experimental"
-            mobile: true
-            disabled: true
-          - name: laptop
-            width: 1366
-            height: 768
-            preset: "desktop"
-            mobile: false
-            disabled: false
+        name: [mobile, desktop, tablet, laptop]
+        width: [default, 1920, 1024, 1366]
+        height: [default, 1080, 768, 768]
+        preset: [default, desktop, experimental, desktop]
+        mobile: [true, false, true, false]
+        disabled: [true, false, true, false]
+
 
     steps:
       - name: Checkout Code
@@ -72,21 +54,21 @@ jobs:
 
       - name: Create Lighthouse Config
         run: |
-          cat << EOF > .lighthouserc.${{ matrix.formfactor.name }}.json
+          cat << EOF > .lighthouserc.${{ matrix.name }}.json
           {
             "ci": {
               "collect": {
                 "numberOfRuns": 1,
                 "url": [],
                 "settings": {
-                  "preset": "${{ matrix.formfactor.preset }}",
-                  "emulatedFormFactor": "${{ matrix.formfactor.name }}",
+                  "preset": "${{ matrix.preset }}",
+                  "emulatedFormFactor": "${{ matrix.name }}",
                   "screenEmulation": {
-                    "mobile": ${{ matrix.formfactor.mobile }},
-                    "width": ${{ matrix.formfactor.width }},
-                    "height": ${{ matrix.formfactor.height }},
+                    "mobile": ${{ matrix.mobile }},
+                    "width": ${{ matrix.width }},
+                    "height": ${{ matrix.height }},
                     "deviceScaleFactor": 2,
-                    "disabled": ${{ matrix.formfactor.disabled }}
+                    "disabled": ${{ matrix.disabled }}
                   },
                   "throttling": {
                     "rttMs": 40,
@@ -97,7 +79,7 @@ jobs:
               },
               "upload": {
                 "target": "filesystem",
-                "outputDir": "./lhci-report-${{ matrix.formfactor.name }}"
+                "outputDir": "./lhci-report-${{ matrix.name }}"
               }
             }
           }
@@ -107,7 +89,7 @@ jobs:
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
           jq --argjson urls "$urls" '.ci.collect.url = $urls' \
-            .lighthouserc.${{ matrix.formfactor.name }}.json > tmp && mv tmp .lighthouserc.${{ matrix.formfactor.name }}.json
+            .lighthouserc.${{ matrix.name }}.json > tmp && mv tmp .lighthouserc.${{ matrix.name }}.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
@@ -116,7 +98,7 @@ jobs:
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.${{ matrix.formfactor.name }}.json
+          lhci autorun --config=.lighthouserc.${{ matrix.name }}.json
         env:
           PORT: 4321
 
@@ -126,5 +108,5 @@ jobs:
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-report-${{ matrix.formfactor.name }}
-          path: lhci-report-${{ matrix.formfactor.name }}
+          name: lighthouse-report-${{ matrix.name }}
+          path: lhci-report-${{ matrix.name }}
