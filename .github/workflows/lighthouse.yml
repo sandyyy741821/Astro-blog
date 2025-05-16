@@ -13,7 +13,7 @@ jobs:
           - name: mobile
             width: 320
             height: 480
-            preset: "desktop"
+            preset: "mobile"
             mobile: true
             disabled: true
           - name: desktop
@@ -25,9 +25,9 @@ jobs:
           - name: tablet
             width: 1024
             height: 768
-            preset: "desktop"
-            mobile: false
-            disabled: false
+            preset: "mobile"
+            mobile: true
+            disabled: true
           - name: laptop
             width: 1366
             height: 768
