@@ -9,7 +9,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        formfactor: [[mobile,320,480], [desktop,1920,1080], [tablet,1024,768], [laptop,1366,768]]
+        formfactor:
+          - name: mobile
+            width: 320
+            height: 480
+          - name: desktop
+            width: 1920
+            height: 1080
+          - name: tablet
+            width: 1024
+            height: 768
+          - name: laptop
+            width: 1366
+            height: 768
 
     steps:
       - name: Checkout Code
@@ -49,20 +61,19 @@ jobs:
 
       - name: Create Lighthouse CI Config
         run: |
-          cd ${{ env.PROJECT_DIR }}
-          cat << EOF > .lighthouserc.${{ matrix.formfactor[0] }}.json
+          cat << EOF > .lighthouserc.${{ matrix.formfactor.name }}.json
           {
             "ci": {
               "collect": {
                 "numberOfRuns": 1,
                 "url": [],
                 "settings": {
-                  "preset": ${{ matrix.formfactor[0] }},
-                  "emulatedFormFactor": "${{ matrix.formfactor[0] }}",
+                  "preset": "${{ matrix.formfactor.name }}",
+                  "emulatedFormFactor": "${{ matrix.formfactor.name }}",
                   "screenEmulation": {
                     "mobile": false,
-                    "width": ${{matrix.formfactor[1]}},
-                    "height": ${{matrix.formfactor[2]}},
+                    "width": ${{ matrix.formfactor.width }},
+                    "height": ${{ matrix.formfactor.height }},
                     "deviceScaleFactor": 2,
                     "disabled": false
                   },
@@ -78,34 +89,33 @@ jobs:
               },
               "upload": {
                 "target": "filesystem",
-                "outputDir": "./lhci-report-${{ matrix.formfactor[0] }}",
+                "outputDir": "./lhci-report-${{ matrix.formfactor.name }}"
               }
             }
           }
           EOF
 
-      - name: Update desktop Config with URLs
+      - name: Update Config with URLs
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.${{matrix.formfactor[0]}}.json > tmp && mv tmp .lighthouserc.${{matrix.formfactor[0]}}.json
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.${{matrix.formfactor.name}}.json > tmp && mv tmp .lighthouserc.${{matrix.formfactor.name}}.json
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
 
-      - name: Run Lighthouse Audit - (${{ matrix.formfactor[0] }})
+      - name: Run Lighthouse Audit - (${{ matrix.formfactor.name }})
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci autorun --config=.lighthouserc.${{matrix.formfactor[0]}}.json
+          lhci autorun --config=.lighthouserc.${{matrix.formfactor.name}}.json
         env:
           PORT: 4321
 
-      - name: Kill Serve (${{ matrix.formfactor[0] }})
+      - name: Kill Serve (${{ matrix.formfactor.name }})
         run: kill $(lsof -t -i:4321) || true
 
-
-      - name: Upload Lighthouse Tablet Report
+      - name: Upload Lighthouse Report
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-report-${{ matrix.formfactor[0] }}
-          path: lhci-report-${{ matrix.formfactor[0] }}
+          name: lighthouse-report-${{ matrix.formfactor.name }}
+          path: lhci-report-${{ matrix.formfactor.name }}
