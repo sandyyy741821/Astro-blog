@@ -12,7 +12,7 @@ jobs:
         formfactor:
           - name: mobile
             width: 414
-            height: 480
+            height: 736
             preset: "desktop"
           - name: desktop
             width: 1920
