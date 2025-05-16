@@ -1,0 +1,14 @@
+[
+  {
+    "url": "http://localhost:4321/",
+    "isRepresentativeRun": true,
+    "htmlPath": "D:\\Internship\\react\\Astro\\Astro_framework_spotify\\lhci-report-desktop\\localhost-_-2025_05_16_10_30_15.report.html",
+    "jsonPath": "D:\\Internship\\react\\Astro\\Astro_framework_spotify\\lhci-report-desktop\\localhost-_-2025_05_16_10_30_15.report.json",
+    "summary": {
+      "performance": 1,
+      "accessibility": 0.87,
+      "best-practices": 0.89,
+      "seo": 0.92
+    }
+  }
+]
