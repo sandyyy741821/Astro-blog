@@ -86,7 +86,7 @@ jobs:
                     "width": ${{ matrix.formfactor.width }},
                     "height": ${{ matrix.formfactor.height }},
                     "deviceScaleFactor": 2,
-                    "disabled": false
+                    "disabled": ${{ matrix.formfactor.disabled }}
                   },
                   "throttling": {
                     "rttMs": 40,
