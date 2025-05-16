@@ -23,14 +23,14 @@ jobs:
             mobile: false
             disabled: false
           - name: tablet
-            width: 1024
-            height: 768
+            width: 2560
+            height: 1600
             preset: "experimental"
             mobile: true
             disabled: true
           - name: laptop
-            width: 1366
-            height: 768
+            width: 3840 
+            height: 2160
             preset: "desktop"
             mobile: false
             disabled: false
@@ -76,11 +76,11 @@ jobs:
           height=${{ matrix.formfactor.height }}
 
           if [ "$width" = "default" ]; then
-            width=null
+            width=0
           fi
 
           if [ "$height" = "default" ]; then
-            height=null
+            height=0
           fi
 
           cat << EOF > .lighthouserc.${{ matrix.formfactor.name }}.json
