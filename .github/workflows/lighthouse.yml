@@ -72,7 +72,7 @@ jobs:
         run: |
           serve dist -l 4321 &
           wait-on http://localhost:4321
-          lhci collect --config=.lighthouserc.laptop.json 
+          lhci autorun --config=.lighthouserc.laptop.json 
         env:
           PORT: 4321
 
