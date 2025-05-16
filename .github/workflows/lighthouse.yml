@@ -47,12 +47,12 @@ jobs:
       - name: Update Tablet Config with URLs
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-tablet.json > tmp && mv tmp lighthouserc-tablet.json
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.tablet.cjs > tmp && mv tmp .lighthouserc.tablet.cjs
 
       - name: Update Laptop Config with URLs
         run: |
           urls=$(jq -R -s -c 'split("\n")[:-1]' < .lighthouseci/urls.txt)
-          jq --argjson urls "$urls" '.ci.collect.url = $urls' lighthouserc-laptop.json > tmp && mv tmp lighthouserc-laptop.json
+          jq --argjson urls "$urls" '.ci.collect.url = $urls' .lighthouserc.laptop.cjs > tmp && mv tmp .lighthouserc.laptop.cjs
 
       - name: Install Static Server and LHCI CLI
         run: npm install -g serve @lhci/cli wait-on
