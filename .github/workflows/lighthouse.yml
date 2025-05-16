@@ -12,19 +12,19 @@ jobs:
         formfactor:
           - name: mobile
             width: 414
-            height: 3200
+            height: 480
             preset: "desktop"
           - name: desktop
             width: 1920
             height: 1080
             preset: "desktop"
           - name: tablet
-            width: 2560
-            height: 1600
+            width: 768
+            height: 1024
             preset: "desktop"
           - name: laptop
-            width: 3840 
-            height: 2160
+            width: 1366
+            height: 768
             preset: "desktop"
 
     steps:
