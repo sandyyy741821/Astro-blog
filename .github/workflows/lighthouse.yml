@@ -13,7 +13,7 @@ jobs:
           - name: mobile
             width: 320
             height: 480
-            preset: "experimental"
+            preset: "desktop"
             mobile: true
           - name: desktop
             width: 1920
@@ -23,7 +23,7 @@ jobs:
           - name: tablet
             width: 1024
             height: 768
-            preset: "experimental"
+            preset: "desktop"
             mobile: true
           - name: laptop
             width: 1366
@@ -78,7 +78,7 @@ jobs:
                   "preset": "${{ matrix.formfactor.preset }}",
                   "emulatedFormFactor": "${{ matrix.formfactor.name }}",
                   "screenEmulation": {
-                    "mobile": false,
+                    "mobile": ${{ matrix.formfactor.mobile }},
                     "width": ${{ matrix.formfactor.width }},
                     "height": ${{ matrix.formfactor.height }},
                     "deviceScaleFactor": 2,
