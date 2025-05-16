@@ -14,7 +14,7 @@ jobs:
             width: 320
             height: 480
             preset: "desktop"
-            mobile: fast
+            mobile: true
           - name: desktop
             width: 1920
             height: 1080
@@ -24,7 +24,7 @@ jobs:
             width: 1024
             height: 768
             preset: "desktop"
-            mobile: false
+            mobile: 
           - name: laptop
             width: 1366
             height: 768
