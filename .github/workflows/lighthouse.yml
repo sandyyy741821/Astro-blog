@@ -13,7 +13,7 @@ jobs:
           - name: mobile
             width: 414
             height: 3200
-            preset: "pref"
+            preset: "perf"
             mobile: true
             disabled: true
           - name: desktop
@@ -74,15 +74,6 @@ jobs:
         run: |
           width=${{ matrix.formfactor.width }}
           height=${{ matrix.formfactor.height }}
-
-          if [ "$width" = "default" ]; then
-            width=0
-          fi
-
-          if [ "$height" = "default" ]; then
-            height=0
-          fi
-
           cat << EOF > .lighthouserc.${{ matrix.formfactor.name }}.json
           {
             "ci": {
