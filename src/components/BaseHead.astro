@@ -39,6 +39,8 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
 <meta property="og:image" content={new URL(image, Astro.url)} />
 
 <!-- ✅ Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LJSESWCJBH"></script>
+
 <script is:inline>
   // @ts-ignore
   window.dataLayer = window.dataLayer || [];
@@ -47,9 +49,25 @@ const { title, description, image = '/blog-placeholder-1.jpg' } = Astro.props;
   // @ts-ignore
   gtag('js', new Date());
   // @ts-ignore
-  gtag('config', 'G-6BY98LVR1E', {
+  gtag('config', 'G-LJSESWCJBH', {
     send_page_view: true,
     allow_google_signals: true
   });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get('utm_source');
+    const utmCampaign = urlParams.get('utm_campaign');
+    const utmContent = urlParams.get('utm_content');
+    const collegeName = urlParams.get('college_name');
+
+    if (utmSource || utmCampaign || utmContent) {
+      window.gtag('event', 'utm_parameters_detected', {
+        utm_source: utmSource,
+        utm_campaign: utmCampaign,
+        utm_content: utmContent,
+        college_name: collegeName,
+      });
+    }
+  });
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-6BY98LVR1E"></script>
